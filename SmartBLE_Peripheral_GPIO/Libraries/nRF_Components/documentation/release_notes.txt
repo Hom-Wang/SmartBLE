@@ -1,6 +1,166 @@
+nRF5 SDK v11.0.0-2.alpha
+------------------------
+Release Date: Week 51, 2015
+ 
+Highlights:
+- Common SDK supporting both the nRF51 and the nRF52 Series  
+- Added support for SoftDevices S130 v2.0.0, S132 v2.0.0, and S212 v0.5.1
+- Permanently removed support for SoftDevices S110 and S120
+- Temporarily removed support for ANTBLE SoftDevices
+- Enhanced Peer Manager and FDS modules
+- Enhanced DFU module
+- Configured nrf_log to use UART by default
+- Added HardFault handler
+- Added drivers for nRF52 peripherals: nrf_drv_i2s, nrf_drv_pdm, 
+  nrf_drv_pwm
+- Enhanced drivers to work for both nRF51 and nRF52: nrf_drv_twi, 
+  nrf_drv_spi, nrf_drv_uart, nrf_drv_timer, nrf_drv_ppi, nrf_drv_clock
+- Added FreeRTOS and RTX support for nRF52
+- Added NFC modules: Type 2 Tag parser, generic NDEF message builder, 
+  new NFC records and messages
+- Added support for Adafruit PN532 NFC shield to provide NFC Forum 
+  Device (Poller) functionality
+- Improved support for NFC: enhanced NFC Type 2 Tag library and 
+  Connection Handover module
+ 
+The following toolchains/devices have been used for testing and
+verification:
+- ARM: MDK-ARM version 5.16a
+- GCC: GCC ARM Embedded 4.9 2015q1
+- IAR: IAR Workbench 7.30.4
+- Windows XP SP3 32-bit
+- Windows 7 SP1 64-bit
+- Windows 8.1
+ 
+Supported SoftDevices:
+- S130 v2.0.0-7.alpha
+- S132 v2.0.0-7.alpha
+- S210 v5.0.0
+- S212 v0.5.1.alpha
+ 
+Supported boards:
+- PCA10028
+- PCA10031
+- PCA10036
+- PCA10040
+- PCA20006 (only for beacon examples)
+- Dynastream's N5DK1 (only for ANT examples)
+ 
+For other devices and boards, see the SDK documentation, section "Using
+the SDK with other boards".
+ 
+ 
+Drivers and libraries:
+
+  New features:
+  - Added driver and example for PWM peripheral (nrf_drv_pwm).
+  - Added driver and example for I2S peripheral (nrf_drv_i2s).
+  - Added driver for PDM peripheral (nrf_drv_pdm).
+  - Enhanced nrf_drv_twi and nrf_drv_spi to support AUTOLOG and 
+    triggering transfers from PPI.
+  - Added double buffering of RX buffers to nrf_drv_uart.
+  - Extended nrf_drv_timer to support more compare channels and low 
+    power counter mode in nRF52.
+  - Extended nrf_drv_ppi API to support forks.
+  - Added support for FreeRTOS and RTX on nRF52.
+  - Simplified SPI and SPIS examples.
+ 
+  Fixed issues:
+  - In certain cases, FreeRTOS on nRF51 kept interrupts disabled after 
+    context switch (see https://devzone.nordicsemi.com/question/57993/tickless-freertos-in-sdk-100-app_uart).
+ 
+  Known issues:
+  - The FreeRTOS nRF51 port has a wrong assertion during system startup.
+    If you are using assertions, you can safely ignore it. Alternatively,
+    comment out line 188 in port_cmsis.c.
+ 
+  Changes:
+  - Enhanced nrf_drv_clock driver (asynchronous clock management).
+ 
+ 
+Serialization:
+
+  - Work in progress; not included in this release.
+ 
+
+ANT:
+
+  New features:
+  - Added support for the S212 SoftDevice v0.5.1.alpha.
+  - Added ANT DFU support for nRF52.
+ 
+  Known issues:
+  - When using the ANT OTA Updater v1.2. for nRF52, there is a flash 
+    memory address limitation of 0x40000 (256 KB) for the application.
+ 
+
+BLE:
+
+  Changes:
+  - All BLE examples have been tested only on PCA10028 and PCA10040.
+  - The S13x SoftDevice v2.0.0-7.alpha is configurable, which leads to a
+    variable RAM setup:
+      - Added a macro to the softdevice_handler module to check the RAM 
+        configuration against the SoftDevice parameters.
+      - Added a wrapper function for the sd_enable function to the 
+        softdevice_handler module, which can output the required RAM 
+        start address if the one passed to the SoftDevice is not 
+        correct.
+  - DFU:
+      - Added an experimental nRF52 bootloader.
+      - Updated the SoftDevice initalization according to API changes in
+        S132 v2.0.0-7.alpha.
+      - Updated to MBR version v2.0.0-1 alpha.
+  - Introduced nrf_log as default logging module (UART) in all BLE 
+    examples.
+  - Peer Manager & FDS have received incremental improvements and bug 
+    fixes.
+ 
+  Known issues:
+  - In the HRS/RSCS Relay example, button presses do not have any effect.
+  - ble_app_cts_c requires an increased UART_TX_BUF_SIZE. The size can be
+    set in nrf_log.c.
+  - DTM for nRF52 does not support long packets according to the 
+    Bluetooth 4.2 specification.
+  - Inconsistent behavior in DFU with devices running Android v6.0.1.
+  - The BLE and serial DFU examples do not work when using CMSIS Packs. 
+    Use the zip version of the SDK instead.
+ 
+
+NFC:
+
+  New features:
+  - Added a Type 2 Tag parser.
+  - Added a generic NFC NDEF message builder (the builder is used to 
+    implement all specific records and messages).
+  - Added modules to create Windows LaunchApp records, Android 
+    Application Records, and common application launch messages. Added 
+    an associated example.
+  - Ported the Adafruit NFC library for the Adafruit PN532 Shield, which
+    provides NFC Forum Device capabilities. Added an associated example
+    to read tags.
+  - Added modules to create application/vnd.bluetooth.le.oob records, 
+    application/vnd.bluetooth.ep.oob records, ac records, Hs records, 
+    and BLE pairing messages.
+
+  Changes:
+  - Improved the NFC Type 2 Tag library: tested and power-optimized the 
+    library and enhanced it with RTT logger capability.
+  - Re-implemented NFC URI record and message. Refactored the associated
+    example.
+  - Enhanced and re-implemented the NFC Connection Handover solution 
+    (pairing using NFC).
+  - Re-implemented the BLE NFC pairing example.
+ 
+  Known issues:
+  - NFC examples do not work when UART logger is enabled.
+
+
+========================================================================
+
 nRF51 SDK v10.0.0
 -----------------
-Release Date: Week 46
+Release date: Week 46, 2015
   
 Highlights:
     - New BLE Peer Manager (experimental), replacement for the BLE Device 
@@ -156,9 +316,75 @@ Known issues:
 
 ========================================================================
 
+nRF52 SDK v0.9.2
+----------------
+Release date: Week 42, 2015
+
+This is an amendment to nRF52 SDK v0.9.1.
+
+Highlights:
+    - New targets to enable the two near field communication (NFC) 
+      examples to run on the new PCA10040 development board with
+      nRF52832 IC rev. Engineering B.
+
+Libraries:
+    - Extended the NFC HAL layer of the NFC library to support the NFCT 
+      peripherial for both the chip version delivered with the nRF52 
+      Preview Development Kit (Engineering A: QFAA-AA0, QFAA-AC0, 
+      CGAA-AA0) and the chip version delivered with the nRF52 Development
+      Kit (Engineering B: QFAA-BA0, QFAA-BB0, CHAA-AA0, CHAA-AB0).
+
+Examples:
+    - Added PCA10040 as target bord for the following examples:
+      - Heart Rate Example with pairing over NFC 
+      - NFC URL Record Application 
+
+Known issues/workarounds:
+    - To use the software workarounds implemented for PCA10036 (part 
+      of nRF52 Preview Development Kit), globally define 
+      HAL_NFC_ENGINEERING_A_FTPAN_WORKAROUND in your project.
+    - The TIMER4 peripheral is used to implement one of the workarounds 
+      for PCA10036. This workaround is not used for PCA10040.
+    - The ble_app_hrs_pairing_nfc example is unable to wake up from 
+      system off.
+ 
+========================================================================
+
+nRF52 SDK v0.9.1
+----------------
+Release date: Week 29, 2015
+ 
+This is an amendment to nRF52 SDK v0.9.0.
+ 
+Highlights:
+    - Support for near field communication (NFC)
+ 
+Libraries/Services:
+    - Added a library that supports Type 2 NFC-A tag functionality in 
+      read-only state
+    - Added a module to generate NFC NDEF messages for BLE pairing over NFC
+    - Added a module to generate NFC NDEF messages with an URI record type
+    - Extended the ble_advdata module
+ 
+Examples:
+    - Added ble_app_hrs_pairing_nfc example that demonstrates pairing over 
+      NFC (with S132 SoftDevice)
+    - Added record_url NFC example that demonstrates exposing a URL record 
+      (without SoftDevice)
+ 
+Limitations:
+    - The current version of the NFC library uses TIMER4.
+    - The ble_app_hrs_pairing_nfc example has been tested only with Samsung 
+      Galaxy S6.
+    - If the path to the SDK directory is too long, compilation in Keil fails. 
+      To work around this problem, move the SDK higher in the folder tree 
+      or use shorter folder names.
+ 
+========================================================================
+
 nRF51 SDK v9.0.0
 ----------------
-Release Date: Week 28
+Release Date: Week 28, 2015
   
 Highlights:
     - Support for S210 SoftDevice v5.0.0
@@ -251,6 +477,75 @@ Known issues:
       the documentation, can lead to the DFU process hanging or returning 
       an error when used with Master Control Panel 3.8 and newer.
 
+========================================================================
+
+nRF52 SDK v0.9.0
+----------------
+Release date: 17.06.2015
+ 
+Highlights:
+  - Support for PCA10036 board v1.0.0 with nRF52832 QFAAAA
+  - Support for S132 SoftDevice v1.0.0-3.alpha (hex included)
+  - Support for S212 SoftDevice v0.2.0-1.alpha 
+  - Support for Keil5 without CMSIS Packs
+  - Support for GCC
+  - Same structure as nRF51 SDK v8.1.0
+  - New peripheral drivers
+  - Documentation moved to Infocenter
+ 
+The following toolchains/devices have been used for testing and verification:
+  - ARM: MDK-ARM version 5.14.0.0
+  - GCC: GCC ARM Embedded 4.9 2015q1
+  - Windows 7 SP1 64-bit
+
+Supported SoftDevices:
+  - S132 v1.0.0-3.alpha
+  - S212 v0.2.0-1.alpha
+
+Supported boards:
+  - PCA10036 v1.0.0
+
+Examples:
+  - Most examples are ported from nRF51 SDK v8.1.0
+  - BLE examples run with the S132 SoftDevice
+  - ANT examples run with the S212 SoftDevice
+  - The following examples are included:
+    - BLE peripheral examples
+    - BLE central example
+    - New BLE combined central and peripheral example
+    - ANT examples
+    - HW peripheral examples
+      - New SAADC example
+      - New TWI master with TWI slave example
+    - BLE/serial DFU bootloader
+    - Direct Test Mode Application
+
+Drivers:
+  - Includes all drivers from nRF51 SDK v8.1.0
+  - New drivers:
+    - SPI driver that supports SPI and SPIM
+    - UART driver that supports UART and UARTE
+    - SAADC HAL driver
+    - TWI slave driver
+    - SAADC driver
+ 
+Libraries/Services:
+  - Same functionality as for nRF51 SDK v8.1.0
+  - The following libraries and services are included:
+    - BLE libraries
+    - BLE Services
+    - Transport Services
+    - Other libraries/components
+ 
+Known issues:
+  - Device might reset when a Bluetooth link layer procedure and flash operation happens in parallel.
+  - Inconsistent behavior with Nexus devices running Android v5.1.1, for example:
+    - DFU fails 
+    - Link loss might reset the nRF52 device 
+      (such behavior might occur with other devices as well)
+  - After a power cycle, a UART lockup between Segger J-Link and nRF52 might occur
+    - Before a serial DFU operation or DTM can be executed, "nrfjprog --reset" must be run 
+ 
 ========================================================================
 
 nRF51 SDK v. 8.1.1
@@ -2425,19 +2720,7 @@ Notification ANT:
 
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
     
     
 ========================================================
